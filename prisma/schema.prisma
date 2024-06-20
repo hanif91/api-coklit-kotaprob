@@ -1,0 +1,1266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model anggaran {
+  kodegol String   @db.VarChar(5)
+  periode String   @db.VarChar(6)
+  jumlah  Decimal? @db.Decimal(15, 2)
+
+  @@id([kodegol, periode])
+}
+
+model angsuran {
+  id             Int       @id @default(autoincrement())
+  psb_id         Int?
+  biaya_angsuran Int
+  indek_angsuran Int?      @db.SmallInt
+  periode        String?   @db.VarChar(6)
+  user_id        Int
+  flaglunas      Boolean?  @default(false)
+  flagjatuhtempo Boolean?  @default(false)
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
+  updated_at     DateTime? @default(now()) @db.Timestamp(0)
+  users          users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "angsuran_ibfk_2")
+
+  @@index([periode], map: "periode")
+  @@index([psb_id], map: "psb_id")
+  @@index([user_id], map: "user_id")
+}
+
+model aplikasi {
+  idaplikasi   Int     @id @default(autoincrement())
+  namaaplikasi String? @db.VarChar(45)
+}
+
+model diameters {
+  id              Int          @id @default(autoincrement())
+  nama            String       @db.VarChar(100)
+  by_pemeliharaan Int
+  by_administrasi Int
+  created_at      DateTime?    @db.Timestamp(0)
+  updated_at      DateTime?    @db.Timestamp(0)
+  aktif           Boolean?     @default(true)
+  pasangbaru      pasangbaru[]
+  pelanggan       pelanggan[]
+  pengaduan       pengaduan[]
+}
+
+model divisi {
+  id             Int              @id @default(autoincrement())
+  nama           String           @db.VarChar(255)
+  is_active      Boolean?         @default(true)
+  deleted_at     DateTime?        @db.DateTime(0)
+  penugasan      penugasan[]
+  penugasan_lain penugasan_lain[]
+  penugasan_psb  penugasan_psb[]
+  petugas        petugas[]
+}
+
+model dl_agdrdbulanini {
+  id       Int      @id @default(autoincrement())
+  kodegol  String?  @db.VarChar(15)
+  anggaran Decimal? @db.Decimal(15, 2)
+}
+
+model dl_agdrdsdbulanini {
+  id       Int      @id @default(autoincrement())
+  kodegol  String?  @db.VarChar(15)
+  anggaran Decimal? @db.Decimal(15, 2)
+}
+
+model dl_drdbulanini {
+  id             Int      @id @default(autoincrement())
+  nosamb         String?  @db.VarChar(50)
+  kodegol        String?  @db.VarChar(25)
+  koderayon      String?  @db.VarChar(25)
+  pakai          Decimal? @db.Decimal(15, 2)
+  biayapemakaian Decimal? @db.Decimal(15, 2)
+  administrasi   Decimal? @db.Decimal(15, 2)
+  pemeliharaan   Decimal? @db.Decimal(15, 2)
+  meterai        Decimal? @db.Decimal(15, 2)
+  rekair         Decimal? @db.Decimal(15, 2)
+}
+
+model dl_drdgolbulanini {
+  kodegol        String   @id @db.VarChar(15)
+  biayapemakaian Decimal? @db.Decimal(15, 2)
+  administrasi   Decimal? @db.Decimal(15, 2)
+  meterai        Decimal? @db.Decimal(15, 2)
+  rekair         Decimal? @db.Decimal(15, 2)
+  jmlrek         Decimal? @db.Decimal(15, 2)
+  pakai          Decimal? @db.Decimal(15, 2)
+  pemeliharaan   Decimal? @db.Decimal(15, 2)
+}
+
+model dl_drdgolsdbulanini {
+  kodegol        String   @id @db.VarChar(15)
+  biayapemakaian Decimal? @db.Decimal(15, 2)
+  administrasi   Decimal? @db.Decimal(15, 2)
+  meterai        Decimal? @db.Decimal(15, 2)
+  rekair         Decimal? @db.Decimal(15, 2)
+  jmlrek         Decimal? @db.Decimal(15, 2)
+  pakai          Decimal? @db.Decimal(15, 2)
+  pemeliharaan   Decimal? @db.Decimal(15, 2)
+}
+
+model dl_drdsdbulanini {
+  id             Int      @id @default(autoincrement())
+  nosamb         String?  @db.VarChar(50)
+  kodegol        String?  @db.VarChar(25)
+  koderayon      String?  @db.VarChar(25)
+  pakai          Decimal? @db.Decimal(15, 2)
+  biayapemakaian Decimal? @db.Decimal(15, 2)
+  administrasi   Decimal? @db.Decimal(15, 2)
+  pemeliharaan   Decimal? @db.Decimal(15, 2)
+  meterai        Decimal? @db.Decimal(15, 2)
+  rekair         Decimal? @db.Decimal(15, 2)
+}
+
+model drd {
+  id              BigInt    @id @default(autoincrement())
+  no_pelanggan    String    @default("") @db.VarChar(20)
+  periode         String?   @db.VarChar(6)
+  periode_rek     String?   @db.VarChar(6)
+  nama            String    @default("") @db.VarChar(100)
+  alamat          String    @default("") @db.VarChar(100)
+  kec_id          Int?
+  kec             String?   @db.VarChar(100)
+  kel_id          Int?
+  kel             String?   @db.VarChar(100)
+  rayon_id        Int?
+  kode_rayon      String?   @db.VarChar(20)
+  rayon           String?   @db.VarChar(100)
+  jalan_id        Int?
+  jalan           String?   @db.VarChar(100)
+  wilayah_id      String?   @db.VarChar(50)
+  wilayah         String?   @db.VarChar(100)
+  diameter_id     Int?
+  diameter        String?   @db.VarChar(20)
+  gol_id          Int?
+  kodegol         String?   @db.VarChar(50)
+  golongan        String?   @db.VarChar(100)
+  merek_id        Int?
+  merek_meter     String?   @db.VarChar(50)
+  stanlalu        Int?      @default(0)
+  stanskrg        Int?      @default(0)
+  pakaiskrg       Int?      @default(0)
+  stanangkat      Int?      @default(0)
+  harga_air       Int?      @default(0)
+  airlimbah       Int?      @default(0)
+  administrasi    Int?      @default(0)
+  pemeliharaan    Int?      @default(0)
+  retribusi       Int?      @default(0)
+  pelayanan       Int?      @default(0)
+  meterai         Int?      @default(0)
+  denda           Int?      @default(0)
+  angsuran        Int?      @default(0)
+  angsuranke      Int?      @default(0) @db.SmallInt
+  angsuran_id     Int?
+  totalrekening   Int?      @default(0)
+  tglbayar        DateTime? @db.DateTime(0)
+  flaglunas       Int?      @default(0) @db.TinyInt
+  flagrekening    Int?      @default(0) @db.SmallInt
+  flagkorrekening Int?      @default(0) @db.TinyInt
+  petugas_id_baca Int?
+  petugas_baca    String?   @db.VarChar(50)
+  kelainan        String?   @db.VarChar(50)
+  created_at      DateTime? @default(now()) @db.DateTime(0)
+  update_at       DateTime? @default(now()) @db.DateTime(0)
+  waktuposting    DateTime? @db.DateTime(0)
+  waktuimport     DateTime? @db.DateTime(0)
+  stanlalu_k      Int?      @default(0)
+  stanskrg_k      Int?      @default(0)
+  pakaiskrg_k     Int?      @default(0)
+  stanangkat_k    Int?      @default(0)
+  harga_air_k     Int?      @default(0)
+  airlimbah_k     Int?      @default(0)
+  administrasi_k  Int?      @default(0)
+  pemeliharaan_k  Int?      @default(0)
+  retribusi_k     Int?      @default(0)
+  pelayanan_k     Int?      @default(0)
+  meterai_k       Int?      @default(0)
+  totalrekening_k Int?      @default(0)
+  admin_ppob      Int?      @default(0)
+  user_id         Int?
+  nama_user       String?   @db.VarChar(50)
+  loket_id        Int?
+  nama_loket      String?   @db.VarChar(50)
+  stspeldrd       Int?      @default(0) @db.TinyInt
+
+  @@unique([no_pelanggan, periode], map: "no_pelanggan")
+  @@index([flagrekening], map: "flagrekening")
+  @@index([diameter_id], map: "iddiameter_FK")
+  @@index([gol_id], map: "idgol_FK")
+  @@index([kec_id], map: "idkec_FK")
+  @@index([kel_id], map: "idkel_FK")
+  @@index([rayon_id], map: "idrayon_FK")
+  @@index([jalan_id], map: "jalan_id")
+  @@index([loket_id], map: "loket_id")
+  @@index([merek_id], map: "merek_id")
+  @@index([nama_loket], map: "nama_loket")
+  @@index([no_pelanggan], map: "no_pelanggan_2")
+  @@index([pakaiskrg], map: "pakaiskrg_IDX")
+  @@index([periode], map: "periode")
+  @@index([periode_rek], map: "periode_rek")
+  @@index([petugas_id_baca], map: "petugas_id_baca")
+  @@index([stanlalu], map: "stanlalu_IDX")
+  @@index([stanskrg], map: "stanskrg_IDX")
+  @@index([stspeldrd], map: "stspeldrd")
+  @@index([user_id], map: "user_id")
+  @@index([waktuimport], map: "waktuimport")
+  @@index([wilayah_id], map: "wilayah_id")
+}
+
+model dump_jrabilling2 {
+  id              BigInt    @id @default(autoincrement())
+  no_pelanggan    String    @default("") @db.VarChar(20)
+  periode         String?   @db.VarChar(6)
+  periode_rek     String?   @db.VarChar(6)
+  nama            String    @default("") @db.VarChar(100)
+  alamat          String    @default("") @db.VarChar(100)
+  kec_id          Int?
+  kec             String?   @db.VarChar(100)
+  kel_id          Int?
+  kel             String?   @db.VarChar(100)
+  rayon_id        Int?
+  kode_rayon      String?   @db.VarChar(20)
+  rayon           String?   @db.VarChar(100)
+  jalan_id        Int?
+  jalan           String?   @db.VarChar(100)
+  wilayah_id      String?   @db.VarChar(50)
+  wilayah         String?   @db.VarChar(100)
+  diameter_id     Int?
+  diameter        String?   @db.VarChar(20)
+  gol_id          Int?
+  kodegol         String?   @db.VarChar(50)
+  golongan        String?   @db.VarChar(100)
+  merek_id        Int?
+  merek_meter     String?   @db.VarChar(50)
+  stanlalu        Int?      @default(0)
+  stanskrg        Int?      @default(0)
+  pakaiskrg       Int?      @default(0)
+  stanangkat      Int?      @default(0)
+  harga_air       Int?      @default(0)
+  airlimbah       Int?      @default(0)
+  administrasi    Int?      @default(0)
+  pemeliharaan    Int?      @default(0)
+  retribusi       Int?      @default(0)
+  pelayanan       Int?      @default(0)
+  meterai         Int?      @default(0)
+  denda           Int?      @default(0)
+  angsuran        Int?      @default(0)
+  angsuranke      Int?      @default(0) @db.SmallInt
+  angsuran_id     Int?
+  totalrekening   Int?      @default(0)
+  tglbayar        DateTime? @db.DateTime(0)
+  flaglunas       Int?      @default(0) @db.TinyInt
+  flagrekening    Int?      @default(0) @db.SmallInt
+  flagkorrekening Int?      @default(0) @db.TinyInt
+  petugas_id_baca Int?
+  petugas_baca    String?   @db.VarChar(50)
+  kelainan        String?   @db.VarChar(50)
+  created_at      DateTime? @default(now()) @db.DateTime(0)
+  update_at       DateTime? @default(now()) @db.DateTime(0)
+  waktuposting    DateTime? @db.DateTime(0)
+  waktuimport     DateTime? @db.DateTime(0)
+  stanlalu_k      Int?      @default(0)
+  stanskrg_k      Int?      @default(0)
+  pakaiskrg_k     Int?      @default(0)
+  stanangkat_k    Int?      @default(0)
+  harga_air_k     Int?      @default(0)
+  airlimbah_k     Int?      @default(0)
+  administrasi_k  Int?      @default(0)
+  pemeliharaan_k  Int?      @default(0)
+  retribusi_k     Int?      @default(0)
+  pelayanan_k     Int?      @default(0)
+  meterai_k       Int?      @default(0)
+  totalrekening_k Int?      @default(0)
+  admin_ppob      Int?      @default(0)
+  user_id         Int?
+  nama_user       String?   @db.VarChar(50)
+  loket_id        Int?
+  nama_loket      String?   @db.VarChar(50)
+  stspeldrd       Int?      @default(0) @db.TinyInt
+
+  @@unique([no_pelanggan, periode], map: "no_pelanggan")
+  @@index([flagrekening], map: "flagrekening")
+  @@index([diameter_id], map: "iddiameter_FK")
+  @@index([gol_id], map: "idgol_FK")
+  @@index([kec_id], map: "idkec_FK")
+  @@index([kel_id], map: "idkel_FK")
+  @@index([rayon_id], map: "idrayon_FK")
+  @@index([jalan_id], map: "jalan_id")
+  @@index([loket_id], map: "loket_id")
+  @@index([merek_id], map: "merek_id")
+  @@index([nama_loket], map: "nama_loket")
+  @@index([no_pelanggan], map: "no_pelanggan_2")
+  @@index([pakaiskrg], map: "pakaiskrg_IDX")
+  @@index([periode], map: "periode")
+  @@index([periode_rek], map: "periode_rek")
+  @@index([petugas_id_baca], map: "petugas_id_baca")
+  @@index([stanlalu], map: "stanlalu_IDX")
+  @@index([stanskrg], map: "stanskrg_IDX")
+  @@index([stspeldrd], map: "stspeldrd")
+  @@index([user_id], map: "user_id")
+  @@index([waktuimport], map: "waktuimport")
+  @@index([wilayah_id], map: "wilayah_id")
+}
+
+model dump_kolektif {
+  id          Int       @id @default(autoincrement())
+  id_kol      Int?
+  no_kolektif String?   @unique(map: "no_kolektif") @db.VarChar(35)
+  nama        String?   @db.VarChar(255)
+  telp        String?   @db.VarChar(255)
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+}
+
+model dumppen {
+  id           Int     @id @default(autoincrement())
+  no_pelanggan String  @db.VarChar(50)
+  periode      String  @db.VarChar(6)
+  nama         String? @db.VarChar(100)
+  alamat       String? @db.VarChar(200)
+  koderayon    String? @db.VarChar(50)
+  kodegol      String? @db.VarChar(50)
+  rekair       Int?
+  stspel       Int?    @db.SmallInt
+
+  @@unique([no_pelanggan, periode], map: "kode")
+}
+
+model dumppiu {
+  id           Int     @id @default(autoincrement())
+  no_pelanggan String  @db.VarChar(50)
+  periode      String  @db.VarChar(6)
+  nama         String? @db.VarChar(100)
+  alamat       String? @db.VarChar(200)
+  koderayon    String? @db.VarChar(50)
+  kodegol      String? @db.VarChar(50)
+  rekair       Int?
+  stspel       Int?    @db.SmallInt
+
+  @@unique([no_pelanggan, periode], map: "kode")
+}
+
+model gol_tanpadenda {
+  id          Int     @id @default(autoincrement())
+  kodegol     String? @db.VarChar(25)
+  golongan_id Int?
+
+  @@index([kodegol], map: "kodegol")
+}
+
+model golongan {
+  id            Int          @id @default(autoincrement())
+  kode_golongan String       @db.VarChar(10)
+  nama          String       @db.VarChar(50)
+  created_at    DateTime?    @db.Timestamp(0)
+  updated_at    DateTime?    @db.Timestamp(0)
+  kode_akun     String?      @db.VarChar(20)
+  administrasi  Int?         @default(0)
+  pemeliharaan  Int?         @default(0)
+  retribusi     Int?         @default(0)
+  pelayanan     Int?         @default(0)
+  denda1        Int?         @default(0)
+  persendenda1  Int?         @default(0) @db.SmallInt
+  denda2        Int?         @default(0)
+  denda3        Int?         @default(0)
+  minpakai      Int?         @default(0) @db.SmallInt
+  idsktarif     Int?         @default(0) @db.TinyInt
+  aktif         Int?         @default(1) @db.TinyInt
+  sktarif       sktarif?     @relation(fields: [idsktarif], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "golongan_ibfk_1")
+  pasangbaru    pasangbaru[]
+  pelanggan     pelanggan[]
+  tarif         tarif[]
+
+  @@unique([kode_golongan, idsktarif], map: "golongan_kode_golongan_unique")
+  @@index([idsktarif], map: "idsktarif")
+}
+
+model hisbatalair {
+  id             Int       @id @default(autoincrement())
+  drd_id         Int?
+  no_pelanggan   String?   @db.VarChar(20)
+  user_batal     String?   @db.VarChar(35)
+  alasanbatal    String?   @db.VarChar(100)
+  waktu          DateTime? @default(now()) @db.Timestamp(0)
+  tglbayar       DateTime? @db.DateTime(0)
+  nama_user      String?   @db.VarChar(50)
+  nama_loket     String?   @db.VarChar(50)
+  totalrekekning Int?
+
+  @@index([drd_id], map: "drd_id")
+  @@index([no_pelanggan], map: "no_pelanggan")
+}
+
+model hisbatalnonair {
+  id                Int       @id @default(autoincrement())
+  nonair_id         Int?
+  no_pembayaran     String?   @unique(map: "no_pembayaran") @db.VarChar(255)
+  tglbayar          DateTime? @db.DateTime(0)
+  jenisnonair_id    Int?
+  jenisnonair       String    @db.VarChar(5)
+  namajenis         String?   @db.VarChar(255)
+  nama              String    @db.VarChar(100)
+  alamat            String    @db.VarChar(200)
+  user_id           Int
+  nama_user         String?   @db.VarChar(75)
+  pendaftaranpel_id Int?
+  pelayananlain_id  Int?
+  pasangbaru_id     Int?
+  jumlah            Int       @default(0)
+  ppn               Int       @default(0)
+  total             Int       @default(0)
+  loket_id          Int?
+  kode_loket        String?   @db.VarChar(50)
+  nama_loket        String?   @db.VarChar(50)
+  angsuran_id       Int?
+  periode_agbjt     String?   @db.VarChar(6)
+  created_at        DateTime? @default(now()) @db.Timestamp(0)
+  updated_at        DateTime? @default(now()) @db.Timestamp(0)
+  flagproses        Int?      @default(0) @db.TinyInt
+  keterangan        String?   @db.VarChar(200)
+  alasanbatal       String?   @db.VarChar(100)
+  user_batal        String?   @db.VarChar(35)
+  waktu             DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([jenisnonair_id], map: "jenisnonair_id")
+  @@index([loket_id], map: "loket_id")
+  @@index([user_id], map: "user_id")
+}
+
+model hiskorrekening {
+  id           Int       @id @default(autoincrement())
+  drd_id       Int?
+  no_pelanggan String?   @db.VarChar(20)
+  user_koreksi String?   @db.VarChar(35)
+  waktu        DateTime? @default(now()) @db.Timestamp(0)
+  tglbayar     DateTime? @db.DateTime(0)
+  nama_user    String?   @db.VarChar(50)
+  nama_loket   String?   @db.VarChar(50)
+
+  @@index([drd_id], map: "drd_id")
+  @@index([no_pelanggan], map: "no_pelanggan")
+}
+
+model hispelanggan {
+  id           Int       @id @default(autoincrement())
+  no_pelanggan String?   @db.VarChar(10)
+  jenis        String?   @db.VarChar(35)
+  tanggal      DateTime? @db.Date
+  user_id      Int?
+  nama_user    String?   @db.VarChar(35)
+  keterangan   String?   @db.VarChar(150)
+
+  @@index([no_pelanggan], map: "no_pelanggan")
+  @@index([tanggal], map: "tanggal")
+  @@index([user_id], map: "user_id")
+}
+
+model jalan {
+  id         Int         @id @default(autoincrement())
+  nama       String      @db.VarChar(255)
+  created_at DateTime?   @db.Timestamp(0)
+  updated_at DateTime?   @db.Timestamp(0)
+  aktif      Boolean?    @default(true)
+  pelanggan  pelanggan[]
+}
+
+model jenis_aduan {
+  id         Int         @id @default(autoincrement())
+  nama       String      @db.VarChar(255)
+  is_active  Boolean?    @default(true)
+  created_at DateTime?   @default(now()) @db.DateTime(0)
+  updated_at DateTime?   @default(now()) @db.DateTime(0)
+  pengaduan  pengaduan[]
+}
+
+model jenis_nonair {
+  id                Int                 @id @default(autoincrement())
+  jenis             String              @unique(map: "jenis") @db.VarChar(5)
+  namajenis         String              @db.VarChar(255)
+  by_pelayanan      Int
+  created_at        DateTime?           @db.DateTime(0)
+  updated_at        DateTime?           @db.DateTime(0)
+  flagpajak         Boolean             @default(false)
+  flagpel           Boolean?            @default(false)
+  flagproses        Boolean?            @default(false)
+  flagrealisasi     Boolean?            @default(false)
+  pendaftaran_lain  pendaftaran_lain[]
+  pendaftaranpel    pendaftaranpel[]
+  penerimaan_nonair penerimaan_nonair[]
+}
+
+model jenis_penyelesaian {
+  id                Int         @id @default(autoincrement())
+  nama_penyelesaian String      @db.VarChar(255)
+  created_at        DateTime?   @default(now()) @db.DateTime(0)
+  updated_at        DateTime?   @default(now()) @db.DateTime(0)
+  is_active         Boolean?    @default(true)
+  pengaduan         pengaduan[]
+}
+
+model kecamatan {
+  id             Int              @id
+  nama           String           @default("") @db.VarChar(100)
+  pelanggan      pelanggan[]
+  pendaftaranpel pendaftaranpel[]
+}
+
+model kelurahan {
+  id             Int              @id
+  kec_id         Int?
+  nama           String           @default("") @db.VarChar(100)
+  pelanggan      pelanggan[]
+  pendaftaranpel pendaftaranpel[]
+}
+
+model kolektif {
+  id          Int         @id @default(autoincrement())
+  no_kolektif String?     @unique(map: "no_kolektif") @db.VarChar(35)
+  nama        String?     @db.VarChar(255)
+  telp        String?     @db.VarChar(255)
+  created_at  DateTime?   @db.Timestamp(0)
+  updated_at  DateTime?   @db.Timestamp(0)
+  pelanggan   pelanggan[]
+}
+
+model kolektif_pelanggan {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  kolektif_id  BigInt    @db.UnsignedBigInt
+  pelanggan_id BigInt    @db.UnsignedBigInt
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+}
+
+model loket {
+  id                Int                 @id @default(autoincrement())
+  kodeloket         String              @unique(map: "id") @default("-") @db.VarChar(50)
+  loket             String?             @default("-") @db.VarChar(50)
+  aktif             Boolean?            @default(true)
+  penerimaan_nonair penerimaan_nonair[]
+  user_loket        user_loket[]
+}
+
+model materai {
+  id         Int       @id
+  min        Int
+  max        Int
+  by_materai Int
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model menudetail {
+  id       Int     @id @default(autoincrement())
+  menu_id  Int?
+  namamenu String? @db.VarChar(35)
+  indek    Int?    @default(0)
+}
+
+model menuutama {
+  id          Int     @id @default(autoincrement())
+  aplikasi_id Int?
+  namamenu    String? @db.VarChar(35)
+  indek       Int?    @default(0)
+}
+
+model merek_meters {
+  id         Int          @id @default(autoincrement())
+  nama       String       @db.VarChar(100)
+  created_at DateTime?    @db.Timestamp(0)
+  updated_at DateTime?    @db.Timestamp(0)
+  pasangbaru pasangbaru[]
+  pelanggan  pelanggan[]
+}
+
+model pasangbaru {
+  id                                     Int                    @id @default(autoincrement())
+  tglrab                                 DateTime?              @db.Date
+  no_rab                                 String                 @unique(map: "no_rab") @db.VarChar(50)
+  reg_id                                 BigInt
+  keterangan                             String?                @db.VarChar(100)
+  biaya_peralatan                        Int?                   @default(0)
+  biaya_ongkos                           Int?                   @default(0)
+  biaya_lainnya                          Int?                   @default(0)
+  diskon                                 Int?                   @default(0)
+  ppn                                    Int?
+  total                                  Int?
+  user_input                             Int?
+  flagsetuju                             Boolean?               @default(false)
+  flagangsur                             Boolean?               @default(false)
+  flaglunas                              Boolean?               @default(false)
+  uangmuka                               Int?                   @default(0)
+  angsurkali                             Int?                   @default(0)
+  angsuranperbulan                       Int?                   @default(0)
+  no_pelanggan                           String?                @unique(map: "no_pelanggan") @db.VarChar(25)
+  user_setuju                            Int?
+  golongan_id                            Int?
+  flagsudahpasang                        Boolean?               @default(false)
+  tglpasang                              DateTime?              @db.Date
+  petugas_id                             Int?
+  flagrealisasi                          Boolean?               @default(false)
+  user_realisasi                         Int?
+  tglrealisasi                           DateTime?              @db.Date
+  realisasi_periode                      String?                @db.VarChar(6)
+  stan                                   Int?                   @default(0)
+  created_at                             DateTime?              @default(now()) @db.Timestamp(0)
+  updated_at                             DateTime?              @default(now()) @db.Timestamp(0)
+  flagditugasi                           Boolean?               @default(false)
+  merek_id                               Int?
+  nama_merek                             String?                @db.VarChar(35)
+  nometer                                Int?
+  nama_realisasi                         String?                @db.VarChar(50)
+  nama_petugas_pasang                    String?                @db.VarChar(50)
+  diameter_id                            Int?
+  nama_diameter                          String?                @db.VarChar(15)
+  tglsetuju                              DateTime?              @db.Date
+  pendaftaranpel                         pendaftaranpel         @relation(fields: [reg_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_1")
+  golongan                               golongan?              @relation(fields: [golongan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_2")
+  users_pasangbaru_user_inputTousers     users?                 @relation("pasangbaru_user_inputTousers", fields: [user_input], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_3")
+  users_pasangbaru_user_setujuTousers    users?                 @relation("pasangbaru_user_setujuTousers", fields: [user_setuju], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_4")
+  users_pasangbaru_user_realisasiTousers users?                 @relation("pasangbaru_user_realisasiTousers", fields: [user_realisasi], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_5")
+  petugas                                petugas?               @relation(fields: [petugas_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_6")
+  diameters                              diameters?             @relation(fields: [diameter_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_7")
+  merek_meters                           merek_meters?          @relation(fields: [merek_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pasangbaru_ibfk_8")
+  penugasan_psb_detail                   penugasan_psb_detail[]
+
+  @@index([diameter_id], map: "diameter_id")
+  @@index([golongan_id], map: "golongan_id")
+  @@index([merek_id], map: "merek_id")
+  @@index([petugas_id], map: "petugas_id")
+  @@index([reg_id], map: "reg_id")
+  @@index([user_input], map: "user_input")
+  @@index([user_realisasi], map: "user_realisasi")
+  @@index([user_setuju], map: "user_setuju")
+}
+
+model pel_coklit {
+  id           Int     @id @default(autoincrement())
+  no_pelanggan String? @unique(map: "no_pelanggan") @db.VarChar(10)
+}
+
+model pelanggan {
+  id               Int                @id @default(autoincrement())
+  status           Int                @db.TinyInt
+  no_pelanggan     String             @unique(map: "pelanggan_no_pelanggan_unique") @db.VarChar(50)
+  no_lama          String?            @db.VarChar(50)
+  no_kartu         String?            @db.VarChar(100)
+  nama             String             @db.VarChar(100)
+  alamat           String             @db.VarChar(255)
+  tmp_lahir        String?            @db.VarChar(100)
+  tgl_lahir        DateTime?          @db.Date
+  no_ktp           String?            @db.VarChar(50)
+  no_kk            String?            @db.VarChar(50)
+  no_telp          String?            @db.VarChar(15)
+  no_hp            String?            @db.VarChar(15)
+  email            String?            @db.VarChar(100)
+  pekerjaan        String?            @db.VarChar(100)
+  jumlah_penghuni  Int?
+  jenis_bangunan   String?            @db.VarChar(100)
+  kepemilikan      String?            @db.VarChar(100)
+  nama_pemilik     String?            @db.VarChar(100)
+  merek_id         Int?
+  no_meter         String             @db.VarChar(20)
+  golongan_id      Int
+  wilayah_id       Int
+  rayon_id         Int
+  jalan_id         Int
+  diameter_id      Int
+  kec_id           Int                @default(1)
+  kel_id           Int                @default(1)
+  kolektif_id      Int?               @default(0)
+  latitude         String?            @db.VarChar(35)
+  longitude        String?            @db.VarChar(35)
+  tgl_pasif        DateTime?          @db.Date
+  tgl_pasang       DateTime?          @db.Date
+  tgl_aktif        DateTime?          @db.Date
+  mbr              Boolean
+  urutanbaca       Int?               @default(0)
+  created_at       DateTime?          @db.Timestamp(0)
+  updated_at       DateTime?          @db.Timestamp(0)
+  rayon            rayon              @relation(fields: [rayon_id], references: [id], map: "pelanggan_ibfk_1")
+  jalan            jalan              @relation(fields: [jalan_id], references: [id], map: "pelanggan_ibfk_2")
+  wilayah          wilayah            @relation(fields: [wilayah_id], references: [id], map: "pelanggan_ibfk_3")
+  golongan         golongan           @relation(fields: [golongan_id], references: [id], map: "pelanggan_ibfk_4")
+  diameters        diameters          @relation(fields: [diameter_id], references: [id], map: "pelanggan_ibfk_5")
+  kecamatan        kecamatan          @relation(fields: [kec_id], references: [id], map: "pelanggan_ibfk_6")
+  kelurahan        kelurahan          @relation(fields: [kel_id], references: [id], map: "pelanggan_ibfk_7")
+  merek_meters     merek_meters?      @relation(fields: [merek_id], references: [id], onDelete: Restrict, map: "pelanggan_ibfk_8")
+  kolektif         kolektif?          @relation(fields: [kolektif_id], references: [id], onDelete: Restrict, map: "pelanggan_ibfk_9")
+  pendaftaran_lain pendaftaran_lain[]
+  pengaduan        pengaduan[]
+
+  @@index([kec_id], map: "kec_id")
+  @@index([kel_id], map: "kel_id")
+  @@index([kolektif_id], map: "kolektif_id")
+  @@index([merek_id], map: "merek_id")
+  @@index([diameter_id], map: "pelanggan_diameter_id_foreign")
+  @@index([golongan_id], map: "pelanggan_golongan_id_foreign")
+  @@index([jalan_id], map: "pelanggan_jalan_id_foreign")
+  @@index([no_kartu], map: "pelanggan_no_kartu_unique")
+  @@index([rayon_id], map: "pelanggan_rayon_id_foreign")
+  @@index([wilayah_id], map: "pelanggan_unit_id_foreign")
+}
+
+model pelanggan_periode {
+  id               BigInt    @id @default(autoincrement())
+  no_pelanggan     String    @default("") @db.VarChar(20)
+  periode          String?   @db.VarChar(6)
+  nama             String    @default("") @db.VarChar(100)
+  alamat           String    @default("") @db.VarChar(100)
+  kec_id           Int?
+  kec              String?   @db.VarChar(100)
+  kel_id           Int?
+  kel              String?   @db.VarChar(100)
+  rayon_id         Int?
+  kode_rayon       String?   @db.VarChar(20)
+  rayon            String?   @db.VarChar(100)
+  jalan_id         Int?
+  jalan            String?   @db.VarChar(100)
+  wilayah_id       String?   @db.VarChar(50)
+  wilayah          String?   @db.VarChar(100)
+  diameter_id      Int?
+  diameter         String?   @db.VarChar(20)
+  gol_id           Int?
+  kodegol          String?   @db.VarChar(50)
+  golongan         String?   @db.VarChar(100)
+  merek_id         Int?
+  merek_meter      String?   @db.VarChar(50)
+  created_at       DateTime? @default(now()) @db.DateTime(0)
+  update_at        DateTime? @default(now()) @db.DateTime(0)
+  status           Boolean?  @default(false)
+  jmlrek           Int?
+  flagposttimtagih Boolean?  @default(false)
+  no_hp            String?   @db.VarChar(15)
+
+  @@unique([no_pelanggan, periode], map: "no_pelanggan")
+  @@index([diameter_id], map: "iddiameter_FK")
+  @@index([gol_id], map: "idgol_FK")
+  @@index([kec_id], map: "idkec_FK")
+  @@index([kel_id], map: "idkel_FK")
+  @@index([rayon_id], map: "idrayon_FK")
+  @@index([jalan_id], map: "jalan_id")
+  @@index([merek_id], map: "merek_id")
+  @@index([no_pelanggan], map: "no_pelanggan_2")
+  @@index([periode], map: "periode")
+  @@index([status], map: "status")
+  @@index([wilayah_id], map: "wilayah_id")
+}
+
+model pendaftaran_lain {
+  id                                           Int                     @id @default(autoincrement())
+  no_regis                                     String                  @unique(map: "no_regis") @db.VarChar(50)
+  tanggal                                      DateTime?               @db.Date
+  pelanggan_id                                 Int?                    @default(0)
+  no_pelanggan                                 String?                 @db.VarChar(50)
+  nama                                         String                  @db.VarChar(100)
+  alamat                                       String                  @db.VarChar(255)
+  keterangan                                   String?                 @db.VarChar(200)
+  created_at                                   DateTime?               @default(now()) @db.Timestamp(0)
+  updated_at                                   DateTime?               @default(now()) @db.Timestamp(0)
+  flaglunas                                    Boolean?                @default(false)
+  jenis_nonair_id                              Int?
+  flexiblebiaya                                Boolean?                @default(false)
+  flagpajak                                    Boolean?                @default(false)
+  jenis                                        String?                 @db.VarChar(5)
+  biaya                                        Int?
+  user_input                                   Int?
+  flagproses                                   Boolean?                @default(false)
+  petugas_id                                   Int?
+  tglproses                                    DateTime?               @db.Date
+  flagrealisasi                                Boolean?                @default(false)
+  user_realisasi                               Int?
+  tglrealisasi                                 DateTime?               @db.Date
+  flagditugasi                                 Boolean?                @default(false)
+  realisasi_periode                            String?                 @db.VarChar(6)
+  pakaim3                                      Int?                    @default(0)
+  pelanggan                                    pelanggan?              @relation(fields: [pelanggan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaran_lain_ibfk_1")
+  jenis_nonair                                 jenis_nonair?           @relation(fields: [jenis_nonair_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaran_lain_ibfk_2")
+  users_pendaftaran_lain_user_inputTousers     users?                  @relation("pendaftaran_lain_user_inputTousers", fields: [user_input], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaran_lain_ibfk_3")
+  petugas                                      petugas?                @relation(fields: [petugas_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaran_lain_ibfk_4")
+  users_pendaftaran_lain_user_realisasiTousers users?                  @relation("pendaftaran_lain_user_realisasiTousers", fields: [user_realisasi], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaran_lain_ibfk_5")
+  penugasan_lain_detail                        penugasan_lain_detail[]
+
+  @@index([jenis_nonair_id], map: "jenis_nonair_id")
+  @@index([no_pelanggan], map: "no_pelanggan")
+  @@index([pelanggan_id], map: "pelanggan_id")
+  @@index([petugas_id], map: "petugas_id")
+  @@index([user_input], map: "user_input")
+  @@index([user_realisasi], map: "user_realisasi")
+}
+
+model pendaftaranpel {
+  id               BigInt        @id @default(autoincrement())
+  no_regis         String        @unique(map: "no_regis") @db.VarChar(50)
+  tanggal          DateTime?     @db.Date
+  nama             String        @db.VarChar(100)
+  alamat           String        @db.VarChar(255)
+  tmp_lahir        String?       @db.VarChar(100)
+  tgl_lahir        DateTime?     @db.Date
+  no_ktp           String        @db.VarChar(50)
+  no_kk            String?       @db.VarChar(50)
+  no_telp          String?       @db.VarChar(15)
+  no_hp            String?       @db.VarChar(15)
+  email            String?       @db.VarChar(100)
+  pekerjaan        String?       @db.VarChar(100)
+  jumlah_penghuni  Int?
+  jenis_bangunan   String?       @db.VarChar(100)
+  kepemilikan      String?       @db.VarChar(100)
+  kec_id           Int
+  rayon_id         Int
+  kel_id           Int
+  jalan_id         Int
+  longlat          String?       @db.VarChar(100)
+  is_mbr           Boolean       @default(false)
+  created_at       DateTime?     @default(now()) @db.Timestamp(0)
+  updated_at       DateTime?     @default(now()) @db.Timestamp(0)
+  flaglunas        Boolean?      @default(false)
+  jenis_nonair_id  Int?
+  flexiblebiaya    Boolean?      @default(false)
+  flagpajak        Boolean?      @default(false)
+  jenis            String?       @db.VarChar(5)
+  biaya            Int?
+  user_id          Int?
+  flag_tidakpasang Boolean?      @default(false)
+  pasangbaru       pasangbaru[]
+  kecamatan        kecamatan     @relation(fields: [kec_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaranpel_ibfk_1")
+  rayon            rayon         @relation(fields: [rayon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaranpel_ibfk_2")
+  kelurahan        kelurahan     @relation(fields: [kel_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaranpel_ibfk_3")
+  users            users?        @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaranpel_ibfk_4")
+  jenis_nonair     jenis_nonair? @relation(fields: [jenis_nonair_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pendaftaranpel_ibfk_5")
+
+  @@index([jalan_id], map: "jalan_id")
+  @@index([jenis_nonair_id], map: "jenis_nonair_id")
+  @@index([kec_id], map: "kec_id")
+  @@index([kel_id], map: "kel_id")
+  @@index([rayon_id], map: "rayon_id")
+  @@index([user_id], map: "user_id")
+}
+
+model penerimaan_nonair {
+  id                BigInt        @id @default(autoincrement())
+  no_pembayaran     String?       @unique(map: "no_pembayaran") @db.VarChar(255)
+  tglbayar          DateTime?     @db.DateTime(0)
+  jenisnonair_id    Int?
+  jenisnonair       String        @db.VarChar(5)
+  namajenis         String?       @db.VarChar(255)
+  nama              String        @db.VarChar(100)
+  alamat            String        @db.VarChar(200)
+  user_id           Int
+  nama_user         String?       @db.VarChar(75)
+  pendaftaranpel_id Int?
+  pelayananlain_id  Int?
+  pasangbaru_id     Int?
+  jumlah            Int           @default(0)
+  ppn               Int           @default(0)
+  total             Int           @default(0)
+  loket_id          Int?
+  kode_loket        String?       @db.VarChar(50)
+  nama_loket        String?       @db.VarChar(50)
+  angsuran_id       Int?
+  periode_agbjt     String?       @db.VarChar(6)
+  created_at        DateTime?     @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?     @default(now()) @db.Timestamp(0)
+  flagproses        Int?          @default(0) @db.TinyInt
+  keterangan        String?       @db.VarChar(200)
+  jenis_nonair      jenis_nonair? @relation(fields: [jenisnonair_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penerimaan_nonair_ibfk_1")
+  users             users         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penerimaan_nonair_ibfk_2")
+  loket             loket?        @relation(fields: [loket_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penerimaan_nonair_ibfk_3")
+
+  @@index([jenisnonair_id], map: "jenisnonair_id")
+  @@index([loket_id], map: "loket_id")
+  @@index([user_id], map: "user_id")
+}
+
+model pengaduan {
+  id                                      Int                   @id @default(autoincrement())
+  nomor                                   String                @db.VarChar(255)
+  is_pelanggan                            Boolean?              @default(false)
+  pelanggan_id                            Int?
+  jenis_aduan_id                          Int?
+  nama                                    String                @db.VarChar(255)
+  no_identitas                            String                @db.VarChar(255)
+  no_telp                                 String                @db.VarChar(20)
+  alamat                                  String?               @db.Text
+  is_processed                            Boolean?              @default(false)
+  processed_at                            DateTime?             @db.DateTime(0)
+  processed_by                            Int?
+  is_complete                             Boolean?              @default(false)
+  completed_at                            DateTime?             @db.DateTime(0)
+  created_at                              DateTime?             @default(now()) @db.DateTime(0)
+  updated_at                              DateTime?             @default(now()) @db.DateTime(0)
+  keterangan                              String?               @db.Text
+  tgl_target                              DateTime?             @db.Date
+  penyelesaian                            String?               @db.Text
+  ket_selesai                             String?               @db.Text
+  jenis_penyelesaian_id                   Int?
+  foto_penyelesaian                       String?               @db.Text
+  petugas_id                              Int?
+  sumber_laporan                          String?               @db.VarChar(50)
+  diameter_id                             Int?
+  jenis_aduan                             jenis_aduan?          @relation(fields: [jenis_aduan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_ibfk_1")
+  petugas_pengaduan_petugas_idTopetugas   petugas?              @relation("pengaduan_petugas_idTopetugas", fields: [petugas_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_ibfk_2")
+  pelanggan                               pelanggan?            @relation(fields: [pelanggan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_ibfk_3")
+  petugas_pengaduan_processed_byTopetugas petugas?              @relation("pengaduan_processed_byTopetugas", fields: [processed_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_ibfk_4")
+  jenis_penyelesaian                      jenis_penyelesaian?   @relation(fields: [jenis_penyelesaian_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_ibfk_5")
+  diameters                               diameters?            @relation(fields: [diameter_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pengaduan_ibfk_6")
+  penugasan_pengaduan                     penugasan_pengaduan[]
+
+  @@index([diameter_id], map: "diameter_id")
+  @@index([jenis_aduan_id], map: "jenis_aduan_id")
+  @@index([jenis_penyelesaian_id], map: "jenis_penyelesaian_id")
+  @@index([pelanggan_id], map: "pelanggan_id")
+  @@index([petugas_id], map: "petugas_id")
+  @@index([processed_by], map: "processed_by")
+}
+
+model penugasan {
+  id                  Int                   @id @default(autoincrement())
+  nomor_penugasan     String?               @db.VarChar(50)
+  divisi_id           Int
+  created_at          DateTime?             @default(now()) @db.DateTime(0)
+  updated_at          DateTime?             @default(now()) @db.DateTime(0)
+  deleted_at          DateTime?             @db.DateTime(0)
+  divisi              divisi                @relation(fields: [divisi_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_ibfk_1")
+  penugasan_pengaduan penugasan_pengaduan[]
+
+  @@index([divisi_id], map: "divisi_id")
+}
+
+model penugasan_lain {
+  id                    Int                     @id @default(autoincrement())
+  nomor_penugasan       String?                 @db.VarChar(50)
+  divisi_id             Int
+  created_at            DateTime?               @default(now()) @db.DateTime(0)
+  updated_at            DateTime?               @default(now()) @db.DateTime(0)
+  divisi                divisi                  @relation(fields: [divisi_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_lain_ibfk_1")
+  penugasan_lain_detail penugasan_lain_detail[]
+
+  @@index([divisi_id], map: "divisi_id")
+}
+
+model penugasan_lain_detail {
+  id               Int              @id @default(autoincrement())
+  reg_id           Int
+  penugasan_id     Int
+  created_at       DateTime?        @default(now()) @db.DateTime(0)
+  updated_at       DateTime?        @default(now()) @db.DateTime(0)
+  pendaftaran_lain pendaftaran_lain @relation(fields: [reg_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_lain_detail_ibfk_1")
+  penugasan_lain   penugasan_lain   @relation(fields: [penugasan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_lain_detail_ibfk_2")
+
+  @@index([penugasan_id], map: "penugasan_id")
+  @@index([reg_id], map: "reg_id")
+}
+
+model penugasan_pengaduan {
+  id           Int       @id @default(autoincrement())
+  pengaduan_id Int
+  penugasan_id Int
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+  pengaduan    pengaduan @relation(fields: [pengaduan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_pengaduan_ibfk_1")
+  penugasan    penugasan @relation(fields: [penugasan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_pengaduan_ibfk_2")
+
+  @@index([pengaduan_id], map: "pengaduan_id")
+  @@index([penugasan_id], map: "penugasan_id")
+}
+
+model penugasan_psb {
+  id                   Int                    @id @default(autoincrement())
+  nomor_penugasan      String?                @db.VarChar(50)
+  divisi_id            Int
+  created_at           DateTime?              @default(now()) @db.DateTime(0)
+  updated_at           DateTime?              @default(now()) @db.DateTime(0)
+  divisi               divisi                 @relation(fields: [divisi_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_psb_ibfk_1")
+  penugasan_psb_detail penugasan_psb_detail[]
+
+  @@index([divisi_id], map: "divisi_id")
+}
+
+model penugasan_psb_detail {
+  id            Int           @id @default(autoincrement())
+  psb_id        Int
+  penugasan_id  Int
+  created_at    DateTime?     @default(now()) @db.DateTime(0)
+  updated_at    DateTime?     @default(now()) @db.DateTime(0)
+  pasangbaru    pasangbaru    @relation(fields: [psb_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_psb_detail_ibfk_1")
+  penugasan_psb penugasan_psb @relation(fields: [penugasan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "penugasan_psb_detail_ibfk_2")
+
+  @@index([penugasan_id], map: "penugasan_id")
+  @@index([psb_id], map: "psb_id")
+}
+
+model periodepiu {
+  id      Int    @id @default(autoincrement())
+  periode String @unique(map: "periode") @db.VarChar(6)
+}
+
+model periodepiu_pen {
+  id      Int    @id @default(autoincrement())
+  periode String @unique(map: "periode") @db.VarChar(6)
+}
+
+model petugas {
+  id                                        Int                @id @default(autoincrement())
+  nama                                      String             @db.VarChar(255)
+  role                                      String?            @db.VarChar(50)
+  no_telp                                   String?            @db.VarChar(20)
+  divisi_id                                 Int
+  username                                  String             @unique(map: "username") @db.VarChar(255)
+  password                                  String             @db.VarChar(255)
+  is_active                                 Boolean?           @default(true)
+  deleted_at                                DateTime?          @db.DateTime(0)
+  pasangbaru                                pasangbaru[]
+  pendaftaran_lain                          pendaftaran_lain[]
+  pengaduan_pengaduan_petugas_idTopetugas   pengaduan[]        @relation("pengaduan_petugas_idTopetugas")
+  pengaduan_pengaduan_processed_byTopetugas pengaduan[]        @relation("pengaduan_processed_byTopetugas")
+  divisi                                    divisi             @relation(fields: [divisi_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "petugas_ibfk_1")
+
+  @@index([divisi_id], map: "divisi_id")
+}
+
+model piutangsum {
+  id      Int    @id @default(autoincrement())
+  rekair  Int?
+  lbr     Int?
+  periode String @db.VarChar(6)
+  kodegol String @db.VarChar(4)
+
+  @@unique([periode, kodegol], map: "periode")
+}
+
+model piutangsum_pen {
+  id      Int    @id @default(autoincrement())
+  rekair  Int?
+  lbr     Int?
+  periode String @db.VarChar(6)
+  kodegol String @db.VarChar(4)
+
+  @@unique([periode, kodegol], map: "periode")
+}
+
+model plot_rute_tim_tagih {
+  id       Int    @id @default(autoincrement())
+  user_id  Int?
+  rayon_id Int?
+  users    users? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "plot_rute_tim_tagih_ibfk_1")
+  rayon    rayon? @relation(fields: [rayon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "plot_rute_tim_tagih_ibfk_2")
+
+  @@index([rayon_id], map: "rayon_id")
+  @@index([user_id], map: "user_id")
+}
+
+model plot_tim_tagih {
+  id      Int    @id @default(autoincrement())
+  user_id Int?
+  min_l   Int?   @default(0)
+  max_l   Int?   @default(0)
+  users   users? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "plot_tim_tagih_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model rayon {
+  id                  Int                   @id @default(autoincrement())
+  kode_rayon          String?               @db.VarChar(35)
+  nama                String                @db.VarChar(100)
+  wilayah_id          Int
+  created_at          DateTime?             @db.Timestamp(0)
+  updated_at          DateTime?             @db.Timestamp(0)
+  aktif               Boolean?              @default(true)
+  pelanggan           pelanggan[]
+  pendaftaranpel      pendaftaranpel[]
+  plot_rute_tim_tagih plot_rute_tim_tagih[]
+  wilayah             wilayah               @relation(fields: [wilayah_id], references: [id], map: "rayon_ibfk_1")
+
+  @@index([wilayah_id], map: "rayons_unit_id_foreign")
+}
+
+model rekon_mitra {
+  id             Int       @id @default(autoincrement())
+  startdate      DateTime? @db.Date
+  enddate        DateTime? @db.Date
+  user_id        Int?
+  namauser       String?   @db.VarChar(50)
+  data           Json?
+  flagverifikasi Boolean   @default(false)
+}
+
+model role {
+  id   Int     @id @default(autoincrement())
+  role String? @db.VarChar(50)
+  menu Json?
+}
+
+model role_akses {
+  id      Int  @id @default(autoincrement())
+  role_id Int?
+  menu_id Int?
+
+  @@unique([role_id, menu_id], map: "roleuniq")
+}
+
+model setting {
+  id                Int     @id
+  lokalpathftp      String? @db.VarChar(256)
+  lokalfolderfoto   String? @db.VarChar(256)
+  remotefolderfoto  String? @db.VarChar(256)
+  virtualdirfoto    String? @db.VarChar(256)
+  alamatwebinfo     String? @db.VarChar(256)
+  flagstaticmap     String? @db.VarChar(1)
+  folderbackup      String? @db.VarChar(256)
+  bolehbc2step      Int?    @default(1) @db.SmallInt
+  bolehbcbarcode    Int?    @default(1) @db.SmallInt
+  bolehbclastdigit  Int?    @default(1) @db.SmallInt
+  bolehbcdatabase   Int?    @default(1) @db.SmallInt
+  strictbcbylatlong Int?    @default(0) @db.SmallInt
+  strictbcgps       Int?    @default(0) @db.SmallInt
+}
+
+model settingdesktop {
+  idx          Int      @id @db.SmallInt
+  mundurtglbyr Int?     @db.SmallInt
+  headerlap1   String?  @db.VarChar(55)
+  headerlap2   String?  @db.VarChar(55)
+  alamat1      String?  @db.VarChar(100)
+  alamat2      String?  @db.VarChar(100)
+  footerkota   String?  @db.VarChar(45)
+  stricpayment Boolean? @default(true)
+}
+
+model setup_denda {
+  idx        Int      @id @default(autoincrement())
+  tgl1       Int?     @db.SmallInt
+  tgl2       Int?     @db.SmallInt
+  flagpersen Boolean? @default(false)
+  denda1     Int?
+  denda2     Int?
+}
+
+model setup_ppn {
+  id       Int       @id @default(autoincrement())
+  jml      Decimal?  @db.Decimal(4, 2)
+  mulaitgl DateTime? @db.Date
+}
+
+model sktarif {
+  id         Int        @id @default(autoincrement()) @db.TinyInt
+  tahun      Int
+  nomor_sk   String     @db.VarChar(50)
+  aktif      Boolean    @default(true)
+  created_at DateTime?  @db.Timestamp(0)
+  updated_at DateTime?  @db.Timestamp(0)
+  golongan   golongan[]
+}
+
+model tagihan_timtagih {
+  id           BigInt @unique(map: "id") @default(autoincrement())
+  no_pelanggan String @db.VarChar(10)
+  drd_id       Int
+  user_id      Int
+  periode      String @db.VarChar(6)
+
+  @@id([no_pelanggan, drd_id, user_id, periode])
+}
+
+model tarif {
+  id          Int       @id @default(autoincrement())
+  golongan_id Int
+  min         Int
+  max         Int
+  harga       Int
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+  istetap     Int?      @default(0) @db.SmallInt
+  golongan    golongan  @relation(fields: [golongan_id], references: [id], onUpdate: Restrict, map: "tarif_ibfk_1")
+
+  @@index([golongan_id], map: "tarif_details_golongan_id_foreign")
+}
+
+model ttdlap {
+  id                              Int        @id @default(autoincrement())
+  kode                            String?    @unique(map: "UNIQUE") @db.VarChar(5)
+  namalap                         String?    @db.VarChar(45)
+  id1                             Int?
+  id2                             Int?
+  id3                             Int?
+  id4                             Int?
+  header1                         String?    @db.VarChar(35)
+  header2                         String?    @db.VarChar(35)
+  header3                         String?    @db.VarChar(35)
+  header4                         String?    @db.VarChar(35)
+  userparaf_ttdlap_id1Touserparaf userparaf? @relation("ttdlap_id1Touserparaf", fields: [id1], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ttdlap_ibfk_1")
+  userparaf_ttdlap_id2Touserparaf userparaf? @relation("ttdlap_id2Touserparaf", fields: [id2], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ttdlap_ibfk_2")
+  userparaf_ttdlap_id3Touserparaf userparaf? @relation("ttdlap_id3Touserparaf", fields: [id3], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ttdlap_ibfk_3")
+  userparaf_ttdlap_id4Touserparaf userparaf? @relation("ttdlap_id4Touserparaf", fields: [id4], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ttdlap_ibfk_4")
+
+  @@index([id1], map: "id1")
+  @@index([id2], map: "id2")
+  @@index([id3], map: "id3")
+  @@index([id4], map: "id4")
+}
+
+model user_loket {
+  id       Int     @id @default(autoincrement())
+  user_id  Int
+  loket_id Int
+  aktif    Boolean
+  users    users   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_loket_ibfk_1")
+  loket    loket   @relation(fields: [loket_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_loket_ibfk_2")
+
+  @@unique([user_id, loket_id], name:"user_id_2" )
+  @@index([user_id], map: "user_id")
+  @@index([loket_id], map: "user_loket_ibfk_2")
+}
+
+model userparaf {
+  id                           Int      @id @default(autoincrement())
+  nama                         String?  @db.VarChar(50)
+  jabatan                      String?  @default("-") @db.VarChar(50)
+  nik                          String?  @default("-") @db.VarChar(15)
+  ttdlap_ttdlap_id1Touserparaf ttdlap[] @relation("ttdlap_id1Touserparaf")
+  ttdlap_ttdlap_id2Touserparaf ttdlap[] @relation("ttdlap_id2Touserparaf")
+  ttdlap_ttdlap_id3Touserparaf ttdlap[] @relation("ttdlap_id3Touserparaf")
+  ttdlap_ttdlap_id4Touserparaf ttdlap[] @relation("ttdlap_id4Touserparaf")
+}
+
+model users {
+  id                                                      Int                   @id @default(autoincrement())
+  username                                                String                @unique(map: "username") @db.Char(50)
+  password                                                String                @db.Char(100)
+  nama                                                    String                @db.Char(50)
+  jabatan                                                 String                @db.Char(50)
+  role_id                                                 Int?
+  is_user_ppob                                            Boolean
+  is_active                                               Boolean
+  is_user_timtagih                                        Boolean?
+  angsuran                                                angsuran[]
+  pasangbaru_pasangbaru_user_inputTousers                 pasangbaru[]          @relation("pasangbaru_user_inputTousers")
+  pasangbaru_pasangbaru_user_setujuTousers                pasangbaru[]          @relation("pasangbaru_user_setujuTousers")
+  pasangbaru_pasangbaru_user_realisasiTousers             pasangbaru[]          @relation("pasangbaru_user_realisasiTousers")
+  pendaftaran_lain_pendaftaran_lain_user_inputTousers     pendaftaran_lain[]    @relation("pendaftaran_lain_user_inputTousers")
+  pendaftaran_lain_pendaftaran_lain_user_realisasiTousers pendaftaran_lain[]    @relation("pendaftaran_lain_user_realisasiTousers")
+  pendaftaranpel                                          pendaftaranpel[]
+  penerimaan_nonair                                       penerimaan_nonair[]
+  plot_rute_tim_tagih                                     plot_rute_tim_tagih[]
+  plot_tim_tagih                                          plot_tim_tagih[]
+  user_loket                                              user_loket[]
+}
+
+model wilayah {
+  id         Int         @id @default(autoincrement())
+  nama       String      @db.VarChar(255)
+  created_at DateTime?   @db.Timestamp(0)
+  updated_at DateTime?   @db.Timestamp(0)
+  pelanggan  pelanggan[]
+  rayon      rayon[]
+}
